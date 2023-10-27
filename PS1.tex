@@ -1,0 +1,163 @@
+% Please do not change %
+\documentclass[11pt]{article} % font size
+\usepackage[margin=1in]{geometry} % margins
+\usepackage{amsmath,amsthm,amssymb} % for the  common "math symbols"
+\usepackage[shortlabels]{enumitem} % for enumeration
+\usepackage{booktabs} % if you need tables
+\usepackage{listings}
+\usepackage{color}
+
+\lstset{
+  frame=none,
+  xleftmargin=2pt,
+  stepnumber=1,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\ttfamily\tiny\color[gray]{0.3},
+  belowcaptionskip=\bigskipamount,
+  captionpos=b,
+  escapeinside={*'}{'*},
+  language=haskell,
+  tabsize=2,
+  emphstyle={\bf},
+  commentstyle=\it,
+  stringstyle=\mdseries\rmfamily,
+  showspaces=false,
+  keywordstyle=\bfseries\rmfamily,
+  columns=flexible,
+  basicstyle=\small\sffamily,
+  showstringspaces=false,
+  morecomment=[l]\%,
+}
+% Feel free to include additional packages (if needed), but make sure it does not override the margin/font requirements.
+%
+\setlength{\parindent}{0pt} % no indent for new paragraphs.
+\setlength{\parskip}{5pt} % distance between paragraphs, which will be used when you have a blank line in your LaTeX code.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Principles of Programming Languages: \\Problem Sheet 1 - First steps}
+%
+\author{}
+\date{}
+%
+\begin{document}
+%
+\maketitle
+
+%You may use the usual \LaTeX\ environments to structure your answers:
+%\begin{align}
+%        \label{basegnn}
+%        \mathbf{h}_u^{(t+1)} = \sigma \bigg( \mathbf{W}_\text{self}^{(t)} \mathbf{h}_u^{(t)}  + \mathbf{W}_\text{neigh}^{(t)} \sum_{v \in N(u)} \mathbf{h}_v^{(t)} + \mathbf{b}^{(t)} \bigg). 
+%\end{align}
+
+
+%\begin{table}[h]
+%\caption{A simple table.}
+%\centering
+%\begin{tabular}[t]{lrrrr}
+%\toprule
+%Graphs & Can & Be  & Fun & Too \\ 
+%\midrule 
+%$G_1$ & $1$  & $2$ & $3$ & $4$ \\ 
+%$G_2$ & $-1$  & $-2$ & $-3$ & $-4$ \\ 
+%$G_3$ & $0.1$  & $0.2$ & $0.3$ & $0.4$ \\ 
+%\bottomrule
+%\end{tabular}
+%\label{tab}
+%\end{table}
+
+\section*{Question 1}
+
+% To answer each part of the question, please simply use a paragraph command 
+% \paragraph{(a)}
+\lstinputlisting[language=Haskell, lastline=13]{../PS1.fun}
+
+\clearpage
+\section*{Question 2}
+
+
+\paragraph{(a)}
+\lstinputlisting[language=Haskell, lastline=13]{../PS1.hs}
+
+\paragraph{(b)}
+\lstinputlisting[language=Haskell, linerange={15-19}]{../PS1.fun}
+
+\paragraph{(c)}
+
+\lstinputlisting[language=Haskell, firstline=15]{../PS1.hs}
+
+\section*{Question 3}
+\begin{lstlisting}[language=Haskell]
+Number 3
+Variable "x"
+Apply (Variable "+") (Variable "x", Number 3)
+Apply (Variable "*") [Apply (Variable "+") (Variable "x", Number 3), Number 4]
+(Let (Val "x" (Number 2)) (Apply (Variable "+") [Variable "x",Number 3]))
+Let (Val "f" (Lambda ["x"] (Apply (Variable "+") [Variable "x",Number 3]))) (Apply (Variable "f") [Number 2])
+Apply (Variable "f") [Apply (Variable "g") [Variable "x"]]
+Apply [Apply (Variable "f") (Variable "g")] [Variable "x"]
+\end{lstlisting}
+
+\section*{Question 4}
+Yes it is legal, value 5.
+$x$ is the argument of the function $f$.
+$g$ becomes a function that adds its argument to the argument of function $f$.
+
+
+\section*{Question 5}
+Yes it is legal, value 24.
+
+\section*{Question 6}
+$f$ is set as a function that adds 3 to its argument, 
+and has nothing to do with $x$ except when referencing its value at assignment of $f$.
+
+\section*{Question 7}
+An Error: wrong number of args is raised.
+With too little parameters, the value of unassigned parameters is unknown,
+and the Error: "param" is not defined can get raised.
+With too many parameters, although the extra parameters do not affect the result,
+it can be extremely confusing to use.
+
+It takes the value from the latest argument of the name
+i.e. value of $x$ is from the third parameter, not the first.
+It is sensible, but should be avoided.
+
+\section*{Question 8}
+Both expressions set the value of $x=e_1$ in $e_2$ - 
+the first directly, the second, as an argument in a a lambda function.
+
+\section*{Question 9}
+\paragraph{(a)}
+The expression is essentially syntactic sugar for
+\begin{lstlisting}[language=Haskell]
+(lambda (x1, x2, ..., xn) e)(e1, e2, ..., en)
+\end{lstlisting}
+Replace with the above construct in the parser.
+% As an example, an abstract syntax could be
+% \begin{lstlisting}
+% LetAnd (
+%   (Val "x1" (Variable "e1")), 
+%   (Val "x2" (Variable "e2")), ..., 
+%   (Val "xn" (Variable "en"))
+% ) (Variable "e")
+% \end{lstlisting}
+% Then define \texttt{eval} for \texttt{LetAnd}
+% \begin{lstlisting}[language=Haskell]
+%   eval (LetAnd ds e1) env =
+%     eval (Apply (Lambda (fst xes) e1) (snd xes)) env
+%       where xes = unzip ds
+% \end{lstlisting}
+
+\paragraph{(b)}
+Replace from the parser the expression with the construct it is syntactic sugar for.
+\paragraph{(c)}
+No idea.
+
+\section*{Question 10}
+Similar to how round brackets () are recognised, with an expression between them,
+square brackets [] can too.
+When square brackets are used, the expressions in between, separated by commas,
+can be used as arguments to the \texttt{list} primitive under \texttt{eval}.
+
+\end{document}

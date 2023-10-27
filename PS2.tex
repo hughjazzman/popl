@@ -1,0 +1,128 @@
+% Please do not change %
+\documentclass[11pt]{article} % font size
+\usepackage[margin=1in]{geometry} % margins
+\usepackage{amsmath,amsthm,amssymb} % for the  common "math symbols"
+\usepackage[shortlabels]{enumitem} % for enumeration
+\usepackage{booktabs} % if you need tables
+\usepackage{listings}
+\usepackage{color}
+
+\lstset{
+  frame=none,
+  xleftmargin=2pt,
+  stepnumber=1,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\ttfamily\tiny\color[gray]{0.3},
+  belowcaptionskip=\bigskipamount,
+  captionpos=b,
+  escapeinside={*'}{'*},
+  language=haskell,
+  tabsize=2,
+  emphstyle={\bf},
+  commentstyle=\it,
+  stringstyle=\mdseries\rmfamily,
+  showspaces=false,
+  keywordstyle=\bfseries\rmfamily,
+  columns=flexible,
+  basicstyle=\small\sffamily,
+  showstringspaces=false,
+  morecomment=[l]\%,
+}
+% Feel free to include additional packages (if needed), but make sure it does not override the margin/font requirements.
+%
+\setlength{\parindent}{0pt} % no indent for new paragraphs.
+\setlength{\parskip}{5pt} % distance between paragraphs, which will be used when you have a blank line in your LaTeX code.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Principles of Programming Languages: \\Problem Sheet 2 - Memory and monads}
+%
+\author{}
+\date{}
+%
+\begin{document}
+%
+\maketitle
+
+%You may use the usual \LaTeX\ environments to structure your answers:
+%\begin{align}
+%        \label{basegnn}
+%        \mathbf{h}_u^{(t+1)} = \sigma \bigg( \mathbf{W}_\text{self}^{(t)} \mathbf{h}_u^{(t)}  + \mathbf{W}_\text{neigh}^{(t)} \sum_{v \in N(u)} \mathbf{h}_v^{(t)} + \mathbf{b}^{(t)} \bigg). 
+%\end{align}
+
+
+%\begin{table}[h]
+%\caption{A simple table.}
+%\centering
+%\begin{tabular}[t]{lrrrr}
+%\toprule
+%Graphs & Can & Be  & Fun & Too \\ 
+%\midrule 
+%$G_1$ & $1$  & $2$ & $3$ & $4$ \\ 
+%$G_2$ & $-1$  & $-2$ & $-3$ & $-4$ \\ 
+%$G_3$ & $0.1$  & $0.2$ & $0.3$ & $0.4$ \\ 
+%\bottomrule
+%\end{tabular}
+%\label{tab}
+%\end{table}
+
+\section*{Question 1}
+
+% To answer each part of the question, please simply use a paragraph command 
+% \paragraph{(a)}
+\lstinputlisting[language=Haskell, lastline=15]{../PS2.fun}
+
+\section*{Question 2}
+
+\lstinputlisting[language=Haskell, linerange={17-34}]{../PS2.fun}
+
+\clearpage
+\section*{Question 3}
+\lstinputlisting[language=Haskell, lastline=11]{../PS2.hs}
+
+\section*{Question 4}
+\lstinputlisting[language=Haskell, linerange={13-14}]{../PS2.hs}
+
+\section*{Question 5}
+\begin{lstlisting}[language=Haskell]
+-- Q5
+-- Suppose xm = \mem -> (x, mem), f x = \mem -> (y, mem), g y = \mem -> (z, mem)
+(xm $> f) $> g 
+= \mem -> let (x, mem') = xm mem in f x mem' $> g 
+= \mem -> let (x, mem') = xm mem in let (y, mem'') = f x mem' in g y mem''
+xm $> (\x -> f x $> g) 
+= xm $> \x -> (\mem -> let (x', mem') = x mem in let (y, mem'') = f x' mem' in g y mem'')
+= \mem -> let (x', mem') = xm mem in let (y, mem'') = f x' mem' in g y mem''
+
+result x $> f
+= \mem -> (x, mem) $> f
+= \mem -> let (y, mem') = x mem in f y mem' 
+= \mem -> f x mem
+= \mem -> (y, mem)
+= f x
+
+xm $> result
+= \mem -> let (x, mem') = xm mem in result x mem'
+= \mem -> (x, mem)
+= xm
+\end{lstlisting}
+
+\clearpage
+\section*{Question 6}
+\lstinputlisting[language=Haskell]{../MonadMemPrint.hs}
+
+\clearpage
+\section*{Question 7}
+\paragraph{(a)}
+\lstinputlisting[language=Haskell]{../EvalMem.fun}
+
+\paragraph{(b)}
+
+\section*{Question 8}
+
+\section*{Question 9}
+
+\section*{Question 10}
+
+\end{document}

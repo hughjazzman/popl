@@ -4,3 +4,8 @@
 *.log
 *.pdf
 *.gz
+*.o
+fun*
+!*.hs
+.DS_Store
+*.hi

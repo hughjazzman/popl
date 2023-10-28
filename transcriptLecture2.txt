@@ -1,0 +1,25 @@
+Exploring the lexer and parser with ghci.
+(This is not a full transcript of Lecture 2.)
+
+$ ghci FunParser Fun
+GHCi
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+[1 of 5] Compiling Environment      ( Environment.hs, interpreted )
+[2 of 5] Compiling FunSyntax        ( FunSyntax.hs, interpreted )
+[3 of 5] Compiling Parsing          ( Parsing.hs, interpreted )
+[4 of 5] Compiling FunParser        ( FunParser.hs, interpreted )
+[5 of 5] Compiling Fun              ( Fun.hs, interpreted )
+Ok, modules loaded: FunParser, Parsing, FunSyntax, Fun, Environment.
+*FunParser> :t lex_string lexer 1
+lex_string lexer 1 :: String -> [Parsing.LexTok Token]
+*FunParser> lex_string lexer 1 "2 + 4 * 5;;"
+[MkLexTok 2 1,MkLexTok "+" 1,MkLexTok 4 1,MkLexTok * 1,MkLexTok 5 1,MkLexTok ;; 1]
+*FunParser> :t parse funParser
+parse funParser :: String -> Phrase
+*FunParser> parse funParser "2 + 8 * 5;;"
+Calculate (Apply (Variable "+") [Number 2,Apply (Variable "*") [Number 8,Number 5]])
+*FunParser> let (Calculate expr) = it;;
+*FunParser> Fun.eval expr Fun.init_env
+42

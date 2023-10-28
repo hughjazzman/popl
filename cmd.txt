@@ -1,0 +1,1 @@
+ghc --make FunMem.hs -main-is FunMem -o funmem

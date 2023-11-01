@@ -99,11 +99,12 @@ result x $> f
 = \mem -> (x, mem) $> f
 = \mem -> let (y, mem') = x mem in f y mem' 
 = \mem -> f x mem
-= \mem -> (y, mem)
 = f x
 
 xm $> result
-= \mem -> let (x, mem') = xm mem in result x mem'
+= \mem -> let (x', mem') = xm mem in result x' mem'
+= \mem -> let (x', mem') = (x, mem) in result x' mem'
+= \mem -> result x mem
 = \mem -> (x, mem)
 = xm
 \end{lstlisting}
@@ -118,9 +119,51 @@ xm $> result
 \lstinputlisting[language=Haskell]{../EvalMem.fun}
 
 \paragraph{(b)}
+Update \texttt{evalargs} to evaluate parameters right to left, 
+and \texttt{eval (Apply f es)} to evaluate the function after.
+\lstinputlisting[language=Haskell]{../PS2.7b.hs}
 
 \section*{Question 8}
+\paragraph{(a)}
+\begin{lstlisting}[language=Haskell]
+  (e_1; e_2); e_3
+  = e_1; ((lambda x -> e_2 x); e_3)
+  = e_1; ((lambda x -> e_2 x); e_3; result)
+  = e_1; ((lambda x -> e_2 x); (\lambda y -> e_3 y; result))
+  = e_1; ((lambda x -> e_2 x); (\lambda y -> e_3 y))
+  = e_1; (lambda x -> e_3 (e_2 x))
+  = e_1; (e_2; e_3)
+\end{lstlisting}
+\begin{lstlisting}[language=Haskell]
+  nil; e1
+  = (nil; result); e1
+  = nil; (lambda x -> result x; e1)
+  = nil; (lambda x -> e1 x)
+  = e1
+\end{lstlisting}
+\texttt{nil} may not satisfy the type of the monad.
+\begin{lstlisting}[language=Haskell]
+  e1; nil
+  = (e1; result); nil
+  = e1; (lambda x -> result x; nil)
+  = e1; (lambda x -> nil x)
+  = nil
+\end{lstlisting}
 
+\paragraph{(b)}
+From Tutorial 1, we know
+\begin{lstlisting}[language=Haskell]
+let val x = e1 in e2
+= (lambda (x) e2)(e1)
+\end{lstlisting}
+Then it is shown that the lambda expression is equivalent.
+\begin{lstlisting}[language=Haskell]
+  e1; e2 
+  = (e1; e2); result
+  = e1; (lambda x -> e2 x; result)
+  = e1; lambda x -> e2 x;
+  = (lambda x -> e2)(e1)
+\end{lstlisting}
 \section*{Question 9}
 
 \section*{Question 10}

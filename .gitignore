@@ -9,3 +9,4 @@ fun*
 !*.hs
 .DS_Store
 *.hi
+Examples*

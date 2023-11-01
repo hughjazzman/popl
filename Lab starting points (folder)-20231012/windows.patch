@@ -1,0 +1,32 @@
+--- Parsing.hs	2021-08-25 20:34:59.703961231 +0100
++++ WinParsing.hs	2021-08-25 20:36:25.585267419 +0100
+@@ -1,5 +1,7 @@
+ {-# LANGUAGE Rank2Types, FlexibleInstances #-}
+ 
++-- Windows version that uses GHC.ConsoleHandler in place of System.Posix
++
+ module Parsing(nextch, switch, star, incln, make_kwlookup,
+                 scan, eat, (<+>), p_fail, p_list0, p_list,
+                 print_value, print_defn, Wrappable(..),
+@@ -13,7 +15,7 @@
+ import qualified System.Environment
+ import System.IO(stdout, stderr, hPutStrLn, hFlush)
+ import System.IO.Unsafe(unsafePerformIO)
+-import System.Posix(installHandler, sigINT, Handler(Catch))
++import GHC.ConsoleHandler(installHandler, Handler(Catch))
+ import Control.Applicative(Applicative(..))
+ import Control.Monad(liftM, ap)
+         
+@@ -274,9 +276,9 @@
+ trap_interrupts =
+   do
+     thr <- Control.Concurrent.myThreadId
+-    System.Posix.installHandler sigINT 
+-      (Catch (Control.Exception.throwTo thr 
+-                (Control.Exception.ErrorCall "interrupted"))) Nothing
++    GHC.ConsoleHandler.installHandler
++      (Catch (\ e -> Control.Exception.throwTo thr 
++                (Control.Exception.ErrorCall "interrupted")))
+     return ()
+ 
+ readline :: String -> IO (Maybe String)

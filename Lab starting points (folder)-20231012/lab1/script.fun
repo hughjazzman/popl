@@ -1,3 +1,6 @@
+-- Wira Azmoon Ahmad
+-- PoPL Lab 1
+
 rec append(xs, ys) = 
   if xs = nil then ys else head(xs) : append(tail(xs), ys);;
 
@@ -15,32 +18,25 @@ rec flatsum(xss) =
   else flatsum(head(xss)) + flatsum(tail(xss));;
 
 rec flatsum1(xss) = 
-  let rec loop(yss, ys, s, done) =
-    -- flag variable 
-    if done then s
-    else if yss = nil then 
-      -- if yss empty, check ys
-      if integer(ys) then loop(nil, nil, s + ys, true)
-      else loop(append(tail(ys), yss), head(ys), s, done) 
-    -- break down yss
-    else if integer(ys) then loop(tail(yss), head(yss), s + ys, done)
-    -- break down ys if still not an integer
-    else if ys <> nil then loop(append(tail(ys), yss), head(ys), s, done) 
-    -- set flag if only left with s
-    else loop(nil, nil, s, true) in
-  loop(xss, 0, 0, false);;
+  let rec loop(yss, s) =
+    let val ys = head(yss) in 
+    if yss = nil then s
+    else 
+      -- if head is empty list ignore it
+      if ys = nil then loop(tail(yss), s)
+      -- if head is integer, add it then proceed
+      else if integer(ys) then loop(tail(yss), s + ys)
+      -- otherwise, add the head back to be processed
+      else loop(append(ys, tail(yss)), s) in
+  loop(xss, 0);;
 
 val flatsum2(xss) = 
-  let val yss = new() in let val ys = new() in let val s = new() in let val d = new() in
-  yss := xss; ys := 0; s := 0; d := false;
-  while !d = false do
-    (if !yss = nil then
-      (if integer(!ys) then (s := !s + !ys;  d := true)
-      else (yss := tail(!ys); ys := head(!ys)))
-    -- order of assignment matters here
-    else if integer(!ys) then (s := !s + !ys; ys := head(!yss); yss := tail(!yss))
-    else if !ys <> nil then (yss := append(tail(!ys), !yss); ys := head(!ys))
-    else d := true);
+  let val yss = new() in let val s = new() in
+    yss := xss; s := 0;
+    while !yss <> nil do
+      if head(!yss) = nil then yss := tail(!yss)
+      else if integer(head(!yss)) then (s := !s + head(!yss); yss := tail(!yss))
+      else yss := append(head(!yss), tail(!yss));
   !s;;
   
 val xxx = list(list(1,2), nil, list(3,4));;

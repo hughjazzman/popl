@@ -121,16 +121,17 @@ xm $> result
 \paragraph{(b)}
 Update \texttt{evalargs} to evaluate parameters right to left, 
 and \texttt{eval (Apply f es)} to evaluate the function after.
-\lstinputlisting[language=Haskell]{../PS2.7b.hs}
+\lstinputlisting[language=Haskell, linerange={16-28}]{../PS2.hs}
 
+\clearpage
 \section*{Question 8}
 \paragraph{(a)}
 \begin{lstlisting}[language=Haskell]
   (e_1; e_2); e_3
   = e_1; ((lambda x -> e_2 x); e_3)
   = e_1; ((lambda x -> e_2 x); e_3; result)
-  = e_1; ((lambda x -> e_2 x); (\lambda y -> e_3 y; result))
-  = e_1; ((lambda x -> e_2 x); (\lambda y -> e_3 y))
+  = e_1; ((lambda x -> e_2 x); (lambda y -> e_3 y; result))
+  = e_1; ((lambda x -> e_2 x); (lambda y -> e_3 y))
   = e_1; (lambda x -> e_3 (e_2 x))
   = e_1; (e_2; e_3)
 \end{lstlisting}
@@ -164,8 +165,12 @@ Then it is shown that the lambda expression is equivalent.
   = e1; lambda x -> e2 x;
   = (lambda x -> e2)(e1)
 \end{lstlisting}
-\section*{Question 9}
 
+\section*{Question 9}
+\lstinputlisting[language=Haskell, linerange={30-36}]{../PS2.hs}
+
+\clearpage
 \section*{Question 10}
+\lstinputlisting[language=Haskell, firstline=38]{../PS2.hs}
 
 \end{document}

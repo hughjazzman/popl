@@ -35,7 +35,6 @@ test = new $> \a ->
     output "world" $> \_ ->
     get a $> \v -> 
     result (v+1)
-    -- nil
 -- test []
 -- ("hello world",42,[41]) 
 

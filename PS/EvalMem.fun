@@ -18,5 +18,6 @@ x := 0;;
 -- x is set by h(), then i() outputs x, then x is set by g()
 f(h(), i(), g());;
 --> [2, 1]
+-- Thus, arguments are evaluated left to right
 
 -- function objects are evaluated first, not sure how to show

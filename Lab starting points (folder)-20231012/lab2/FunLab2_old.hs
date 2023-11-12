@@ -1,4 +1,4 @@
-module FunLab2(main) where
+module FunLab2_old(main) where
 import Parsing
 import FunSyntax
 import FunParser
@@ -37,7 +37,7 @@ data Value =
   | BoolVal Bool
   | Addr Location
   | Nil | Cons Value Value
-  | Function ([M Value] -> M Value)
+  | Function ([Value] -> M Value)
 
 data Def = 
     Const Value
@@ -58,7 +58,7 @@ eval (Variable x) env =
     Param vm -> vm
 eval (Apply f es) env =
   eval f env $> (\fv ->
-    result (map (\e -> eval e env) es) $> (\args ->
+    evalargs es env $> (\args ->
       apply fv args))
 eval (If e1 e2 e3) env =
   eval e1 env $> (\b ->
@@ -96,9 +96,9 @@ evalargs (e:es) env =
 
 abstract :: [Ident] -> Expr -> Env -> Value
 abstract xs e env =
-  Function (\args -> eval e (defargs env xs (map Param args)))
+  Function (\args -> eval e (defargs env xs (map Const args)))
 
-apply :: Value -> [M Value] -> M Value
+apply :: Value -> [Value] -> M Value
 apply (Function f) args = f args
 apply _ args = error "applying a non-function"
 
@@ -112,12 +112,6 @@ elab (Rec x e) env =
     _ ->
       error "RHS of letrec must be a lambda"
 
-values :: [M a] -> M [a]
-values [] = result []
-values (e:es) = 
-  e $> \v ->
-  values es $> \vs ->
-  result (v:vs)
 
 -- INITIAL ENVIRONMENT
 
@@ -148,8 +142,8 @@ init_env =
     primitive "!" (\ [Addr a] -> get a)]
   where
     constant x v = (x, Const v)
-    primitive x f = (x, Const (Function (\ args -> values args $> primwrap x f)))
-    pureprim x f = (x, Const (Function (\ args -> values args $> \vs -> result $ primwrap x f vs)))
+    primitive x f = (x, Const (Function (primwrap x f)))
+    pureprim x f = (x, Const (Function (\ args -> result $ primwrap x f args)))
 
 
 -- AUXILIARY FUNCTIONS ON VALUES

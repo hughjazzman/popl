@@ -1,0 +1,146 @@
+% Please do not change %
+\documentclass[11pt]{article} % font size
+\usepackage[margin=1in]{geometry} % margins
+\usepackage{amsmath,amsthm,amssymb} % for the  common "math symbols"
+\usepackage[shortlabels]{enumitem} % for enumeration
+\usepackage{booktabs} % if you need tables
+\usepackage{listings}
+\usepackage{color}
+
+\lstset{
+  frame=none,
+  xleftmargin=2pt,
+  stepnumber=1,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\ttfamily\tiny\color[gray]{0.3},
+  belowcaptionskip=\bigskipamount,
+  captionpos=b,
+  escapeinside={*'}{'*},
+  language=haskell,
+  tabsize=2,
+  emphstyle={\bf},
+  commentstyle=\it,
+  stringstyle=\mdseries\rmfamily,
+  showspaces=false,
+  keywordstyle=\bfseries\rmfamily,
+  columns=flexible,
+  basicstyle=\small\sffamily,
+  showstringspaces=false,
+  morecomment=[l]\%,
+}
+% Feel free to include additional packages (if needed), but make sure it does not override the margin/font requirements.
+%
+\setlength{\parindent}{0pt} % no indent for new paragraphs.
+\setlength{\parskip}{5pt} % distance between paragraphs, which will be used when you have a blank line in your LaTeX code.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Principles of Programming Languages: \\Problem Sheet 3 - Semantic variations}
+%
+\author{Wira Azmoon Ahmad}
+\date{17 Nov 2023}
+%
+\begin{document}
+%
+\maketitle
+
+%You may use the usual \LaTeX\ environments to structure your answers:
+%\begin{align}
+%        \label{basegnn}
+%        \mathbf{h}_u^{(t+1)} = \sigma \bigg( \mathbf{W}_\text{self}^{(t)} \mathbf{h}_u^{(t)}  + \mathbf{W}_\text{neigh}^{(t)} \sum_{v \in N(u)} \mathbf{h}_v^{(t)} + \mathbf{b}^{(t)} \bigg). 
+%\end{align}
+
+
+%\begin{table}[h]
+%\caption{A simple table.}
+%\centering
+%\begin{tabular}[t]{lrrrr}
+%\toprule
+%Graphs & Can & Be  & Fun & Too \\ 
+%\midrule 
+%$G_1$ & $1$  & $2$ & $3$ & $4$ \\ 
+%$G_2$ & $-1$  & $-2$ & $-3$ & $-4$ \\ 
+%$G_3$ & $0.1$  & $0.2$ & $0.3$ & $0.4$ \\ 
+%\bottomrule
+%\end{tabular}
+%\label{tab}
+%\end{table}
+
+\section*{Question 1}
+
+% To answer each part of the question, please simply use a paragraph command 
+% \paragraph{(a)}
+\lstinputlisting[language=Haskell, lastline=30]{../PS3.hs}
+
+\clearpage
+\section*{Question 2}
+
+\paragraph{(a)}
+
+\lstinputlisting[language=Haskell, linerange={11-17}]{../FunMonadExnVal.hs}
+
+\paragraph{(b)}
+
+\lstinputlisting[language=Haskell, linerange={19-25}]{../FunMonadExnVal.hs}
+
+\paragraph{(c)}
+
+\lstinputlisting[language=Haskell, linerange={33-35}]{../PS3.hs}
+
+\paragraph{(d)}
+The expression gives 2. We can force the \texttt{eval e2 env} before \texttt{orelse}.
+
+\lstinputlisting[language=Haskell, linerange={37-38}]{../PS3.hs}
+
+\section*{Question 3}
+\lstinputlisting[language=Haskell, linerange={41-73}]{../PS3.hs}
+
+\section*{Question 4}
+\lstinputlisting[language=Haskell, linerange={75-103}]{../PS3.hs}
+
+\section*{Question 5}
+\paragraph{(a)}
+$M_1$ $\alpha$ maps the memory to a type $Maybe$, applied on a tuple of $(\alpha,Mem)$
+while $M_2$ $\alpha$ maps the memory to a tuple, within which there's a $Maybe$ and $Mem$ type.
+
+\paragraph{(b)}
+This means that the first type keeps memory only if the $Maybe$ type is $Just$, not if it is $Nothing$,
+while the second type always keeps memory whether or not the $Maybe$ type is $Just$ or $Nothing$.
+The first type is more efficient since it does not worry about memory as much.
+
+\paragraph{(c)}
+The example below has 1 for the first interpreter, and 2 for the second.
+\lstinputlisting[lastline=3]{../PS3.fun}
+
+\section*{Question 6}
+\lstinputlisting[linerange={65-67,88-101,105-112}]{../FunC.hs}
+
+\clearpage
+\section*{Question 7}
+\paragraph{(a)}
+
+\lstinputlisting[language=Haskell]{../swapmem.fun}
+
+% \paragraph{(b)}
+\lstinputlisting[language=Haskell,linerange={102-104}]{../FunC.hs}
+
+% \paragraph{(c)}
+\lstinputlisting[language=Haskell]{../swapc.fun}
+
+% \paragraph{(d)}
+\lstinputlisting[linerange={122-126}]{../PS3.hs}
+
+\paragraph{(e)}
+No, since $x$ may not be an address, so dereferencing it does not make sense.
+\lstinputlisting[language=Haskell,linerange={128-133}]{../PS3.hs}
+
+\clearpage
+\section*{Question 8}
+\lstinputlisting[language=Haskell,linerange={136-138}]{../PS3.hs}
+
+\section*{Question 9}
+\lstinputlisting[language=Haskell,firstline=140]{../PS3.hs}
+
+
+\end{document}

@@ -17,6 +17,8 @@ data Expr =                     -- Expressions $e$
   | Let Defn Expr               -- \pg let $d$ in $e$
   | Assign Expr Expr            -- \pg $e_1$ := $e_2$
   | Sequence Expr Expr          -- \pg $e_1$; $e_2$
+  | Loop Expr                   -- \pg loop $e$
+  | Exit                        -- \pg exit
   | While Expr Expr             -- \pg while $e_1$ do $e_2$
   deriving Show
 

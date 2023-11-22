@@ -9,7 +9,7 @@ import Data.Char
 data Token = 
     IDENT IdKind Ident | NUMBER Integer | STRING String
   | LPAR | RPAR | COMMA | EQUAL | ASSIGN | SEMI | SSEMI | MINUS
-  | IF | THEN | ELSE | LET | REC | VAL | LAMBDA | IN | WHILE | DO
+  | IF | THEN | ELSE | LET | REC | VAL | LAMBDA | IN | WHILE | DO | LOOP | EXIT
   | BADTOK Char
   deriving Eq
 
@@ -27,13 +27,14 @@ instance Show Token where
       IF -> "if"; THEN -> "then"; ELSE -> "else"; LET -> "let"
       REC -> "rec"; VAL -> "val"; LAMBDA -> "lambda"; IN -> "in"
       WHILE -> "while"; DO -> "do"
+      LOOP -> "loop"; EXIT -> "exit"
       BADTOK c -> [c]
 
 kwlookup = 
   make_kwlookup (IDENT ID)
     [("if", IF), ("then", THEN), ("else", ELSE), ("let", LET), ("in", IN),
       ("rec", REC), ("val", VAL), ("lambda", LAMBDA), ("while", WHILE), 
-      ("do", DO),
+      ("do", DO), ("loop", LOOP), ("exit", EXIT),
       ("div", IDENT MULOP "div"), 
       ("mod", IDENT MULOP "mod")]
 
@@ -110,6 +111,7 @@ p_cond =
                 eat ELSE; e3 <- p_cond; return (If e1 e2 e3)
   <+> do eat WHILE; e1 <- p_cond; eat DO; 
                 e2 <- p_cond; return (While e1 e2)
+  <+> do eat LOOP; e <- p_cond; return (Loop e)
   <+> p_term6
 
 p_term6 =
@@ -160,6 +162,7 @@ p_primary =
   do n <- p_number; return (Number n)
   <+> do x <- p_name; return (Variable x)
   <+> do eat LPAR; e <- p_expr; eat RPAR; return e
+  <+> do eat EXIT; return Exit
 
 p_number =
   do t <- scan; case t of NUMBER n -> return n; _ -> p_fail

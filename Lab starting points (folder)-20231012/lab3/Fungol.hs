@@ -10,21 +10,34 @@ import FunParser
 
 infixl 1 $>
 
-type M a = Mem -> (a, Mem)
+data Maybe a = Just a | Nothing
 
-result x mem = (x, mem)
+type M a = Mem -> (Fungol.Maybe a, Mem)
 
-(xm $> f) mem =
-  let (x, mem') = xm mem in (f $! x) mem'
+result x mem = (Fungol.Just x, mem)
+
+(xm $> f) mem = let (xa, mem') = xm mem in
+  case xa of
+    Fungol.Just x -> (f $! x) mem'
+    Fungol.Nothing -> (Fungol.Nothing, mem')
 
 get :: Location -> M Value
-get a mem = (contents mem a, mem)
+get a mem = result (contents mem a) mem
 
 put :: Location -> Value -> M ()
-put a v mem = ((), update mem a v)
+put a v mem = result () (update mem a v)
 
 new :: M Location
-new mem = let (a, mem') = fresh mem in (a, mem')
+new mem = let (a, mem') = fresh mem in result a mem'
+
+exit :: M a
+exit mem = (Fungol.Nothing, mem)
+
+orelse :: M a -> M a -> M a
+orelse xm ym mem = let (xa, mem') = xm mem in 
+  case xa of
+    Fungol.Just x -> result x mem'
+    Fungol.Nothing -> ym mem'
 
 bind :: Value -> M Location
 bind v = new $> (\ a -> put a v $> (\ () -> result a))
@@ -92,6 +105,12 @@ eval (While e1 e2) env = u
         BoolVal False -> result Nil
         _ -> error "boolean required in while loop")
 
+eval (Loop e) env = u
+  where
+    u =  orelse (eval e env $> \_ -> u) (result Nil)
+
+eval Exit env = exit
+
 eval e env =
   error ("can't evaluate " ++ pretty e)
 
@@ -151,6 +170,7 @@ init_env =
   where
     constant x v = (x, Const v)
     pureprim x f = (x, Proc (\ args -> result $ primwrap x f args))
+    primitive x f = (x, Proc (primwrap x f))
 
 
 -- AUXILIARY FUNCTIONS ON VALUES
@@ -184,11 +204,13 @@ type GloState = (Env, Mem)
 
 obey :: Phrase -> GloState -> (String, GloState)
 obey (Calculate exp) (env, mem) =
-  let (v, mem') = eval exp env mem in
-  (print_value v, (env, mem'))
+  let (xa, mem') = eval exp env mem in
+  case xa of 
+    Fungol.Just v -> (print_value v, (env, mem'))
+    Fungol.Nothing -> ("exit!", (env, mem'))
 obey (Define def) (env, mem) =
   let x = def_lhs def in
-  let (env', mem') = elab def env mem in
+  let (Fungol.Just env', mem') = elab def env mem in
   (print_defn env' x, (env', mem'))
 
 main = dialog funParser obey (init_env, init_mem)

@@ -18,3 +18,5 @@ ex3;;
 ex4;;
 
 -- In ex2, the exit is fine for Fungol.hs since
+-- its scope is within f
+-- It terminates in FungolCont.hs

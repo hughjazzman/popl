@@ -129,7 +129,8 @@ abstract :: [Ident] -> Expr -> Env -> Cont() -> Def
 abstract xs e env kx =
   Proc (\ args -> 
     mapm bind args $> (\ as mem _ ->
-      callxc (\_ -> eval e (defargs env xs (map Ref as)) ) mem kx))
+      -- callxc (\_ -> eval e (defargs env xs (map Ref as)) ) mem kx))
+      eval e (defargs env xs (map Ref as))  mem kx))
 
 apply :: Def -> [Value] -> M Value
 apply (Proc f) args = f args

@@ -1,0 +1,232 @@
+% Please do not change %
+\documentclass[11pt]{article} % font size
+\usepackage[margin=1in]{geometry} % margins
+\usepackage{amsmath,amsthm,amssymb} % for the  common "math symbols"
+\usepackage[shortlabels]{enumitem} % for enumeration
+\usepackage{booktabs} % if you need tables
+\usepackage{listings}
+\usepackage{color}
+
+\newtheorem{prop}{Proposition}
+
+\lstset{
+  frame=none,
+  xleftmargin=2pt,
+  stepnumber=1,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\ttfamily\tiny\color[gray]{0.3},
+  belowcaptionskip=\bigskipamount,
+  captionpos=b,
+  escapeinside={*'}{'*},
+  language=haskell,
+  tabsize=2,
+  emphstyle={\bf},
+  commentstyle=\it,
+  stringstyle=\mdseries\rmfamily,
+  showspaces=false,
+  keywordstyle=\bfseries\rmfamily,
+  columns=flexible,
+  basicstyle=\small\sffamily,
+  showstringspaces=false,
+  morecomment=[l]\%,
+}
+% Feel free to include additional packages (if needed), but make sure it does not override the margin/font requirements.
+%
+\setlength{\parindent}{0pt} % no indent for new paragraphs.
+\setlength{\parskip}{5pt} % distance between paragraphs, which will be used when you have a blank line in your LaTeX code.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Principles of Programming Languages: \\Problem Sheet 4 - Continuations and types}
+%
+\author{Wira Azmoon Ahmad}
+\date{27 Nov 2023}
+%
+\begin{document}
+%
+\maketitle
+
+%You may use the usual \LaTeX\ environments to structure your answers:
+%\begin{align}
+%        \label{basegnn}
+%        \mathbf{h}_u^{(t+1)} = \sigma \bigg( \mathbf{W}_\text{self}^{(t)} \mathbf{h}_u^{(t)}  + \mathbf{W}_\text{neigh}^{(t)} \sum_{v \in N(u)} \mathbf{h}_v^{(t)} + \mathbf{b}^{(t)} \bigg). 
+%\end{align}
+
+
+%\begin{table}[h]
+%\caption{A simple table.}
+%\centering
+%\begin{tabular}[t]{lrrrr}
+%\toprule
+%Graphs & Can & Be  & Fun & Too \\ 
+%\midrule 
+%$G_1$ & $1$  & $2$ & $3$ & $4$ \\ 
+%$G_2$ & $-1$  & $-2$ & $-3$ & $-4$ \\ 
+%$G_3$ & $0.1$  & $0.2$ & $0.3$ & $0.4$ \\ 
+%\bottomrule
+%\end{tabular}
+%\label{tab}
+%\end{table}
+
+\section*{Question 1}
+
+% To answer each part of the question, please simply use a paragraph command 
+% \paragraph{(a)}
+
+
+\lstinputlisting[language=Haskell]{../revk.hs}
+Suppose we have a list $[a_1,a_2,...,a_n]$.
+We show by induction that the continuation for iteration $i$ can be written in the form
+\[(...((y_i ++ [a_{i-1}]) ++ [a_{i-2}])++...++[a_1]) = y_i + [a_{i-1},...,a_1] \]
+
+\lstinputlisting[language=Haskell, lastline=3]{../PS4.hs}
+
+Suppose for $n=k$, the continuation is 
+\[y_k + [a_{k-1},...,a_1] \]
+
+\lstinputlisting[language=Haskell, linerange={5-8}]{../PS4.hs}
+We write in \texttt{fun}:
+\lstinputlisting[language=Haskell]{../revk.fun}
+
+\section*{Question 2}
+\lstinputlisting[language=Haskell]{../fibcpsdefun.hs}
+\lstinputlisting[language=Haskell,linerange={10-41}]{../PS4.hs}
+
+\section*{Question 3}
+Charlie is right because the point of CPS is to prevent unbounded recursion, 
+and the division here has no recursion.
+
+\section*{Question 4}
+\paragraph{(a)}
+\begin{prop}
+$\forall s,s\in S \implies \exists n\in\mathbb{Z}_{\geq 0} : s = ab^n$
+\end{prop}
+\begin{proof}
+  Let $P(s)=(\exists n\in\mathbb{Z}_{\geq 0} : s = ab^n)$. The first rule is true, since for $n=1$, $ab\in S$.
+
+  For rule 2, suppose $P(ax)$. Then $\exists n\in\mathbb{Z}_{\geq 0} : ax = ab^n$. So $axx = ab^{2n}$.
+  Let $n'=2n\in\mathbb{Z}_{\geq 0}$, then $\exists n'\in\mathbb{Z}_{\geq 0} : axx = ab^{n'}$. Then $P(axx)$.
+
+  For rule 3, suppose $P(abbbx)$. Then $\exists n\in\mathbb{Z}_{\geq 0} : abbbx = ab^n$, where $n\geq3$. 
+  So $ax=ab^{n-3}$. 
+  Let $n'=n-3\in\mathbb{Z}_{\geq 0}$, then $\exists n'\in\mathbb{Z}_{\geq 0} : ax = ab^{n'}$. Then $P(ax)$.
+\end{proof}
+
+\paragraph{(b)}
+\[\dfrac{
+  \dfrac{
+    \dfrac{
+      \dfrac{
+        \dfrac{-}{ab\in S}(1)
+      }{abb\in S} (2), x=b
+    }{abbbb \in S} (2), x=bb
+  }{abbbbbbbb \in S} (2), x = bbbb
+}{abbbbbbbb \in S}(3), x = bbbbb\]
+
+
+\begin{prop}
+$\forall s,s\in S \implies \exists n\in \{k:k\in \mathbb{Z}^+ \wedge 3 \nmid k\} : s = ab^n$.
+In other words, $n$ is not a multiple of 3.
+\end{prop}
+
+\begin{proof}
+  Let $T=\{k:k\in \mathbb{Z}^+ \wedge 3 \nmid k\}$.
+
+  Let $P(s)=(\exists n\in T : s = ab^n)$. The first rule is true, since for $n=1\in T$, $ab\in S$.
+
+  For rule 2, suppose $P(ax)$. Then $\exists n\in T : ax = ab^n$. So $axx = ab^{2n}$.
+  Let $n'=2n\in T$, then $\exists n'\in T : axx = ab^{n'}$. Then $P(axx)$.
+
+  For rule 3, suppose $P(abbbx)$. Then $\exists n\in T : abbbx = ab^n$, where $n>3$. 
+  So $ax=ab^{n-3}$. Since $3\nmid n$, $3 \nmid (n-3)$.
+  Let $n'=n-3\in T$, then $\exists n'\in T : ax = ab^{n'}$. Then $P(ax)$.
+\end{proof}
+
+\clearpage
+\section*{Question 5}
+On top of the transition rules in lecture, we have the following
+\begin{equation}
+\begin{aligned}
+&\langle succ, env, k \rangle \rightarrow [k, succ]\\
+&\langle pred, env, k \rangle \rightarrow [k, pred]\\
+&[succ(\Box):k,v] \rightarrow \langle v+1, -, k\rangle\\
+&[pred(\Box):k,v] \rightarrow \langle v-1, -, k\rangle\\
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+  &\langle pred (succ (1)), -, Show \rangle \\
+  &\rightarrow \langle pred, -, (\Box(succ(1)), -):Show\rangle\\
+  &\rightarrow [ (\Box(succ(1)), -):Show, pred]\\
+  &\rightarrow \langle succ(1), -, pred(\Box): Show \rangle\\
+  &\rightarrow \langle succ, -, (\Box(1), -):pred(\Box): Show \rangle\\
+  &\rightarrow [ (\Box(1), -):pred(\Box): Show, succ ]\\
+  &\rightarrow \langle 1, -, succ(\Box) :pred(\Box): Show \rangle\\
+  &\rightarrow [ succ(\Box) :pred(\Box): Show , 1]\\
+  &\rightarrow \langle 2, -, pred(\Box): Show \rangle\\
+  &\rightarrow [ pred(\Box) : Show , 2]\\
+  &\rightarrow \langle 1, -, Show \rangle
+\end{aligned}
+\end{equation}
+
+\clearpage
+\section*{Question 6}
+\paragraph{(a)}
+No to both.
+Consider the infinite chain 
+\[1\leq2\leq3\leq...\]
+which clearly does not have any upper bound.
+It has no bottom element since for any integer $x$, we can also find an integer $y=x-1$ so $x\not\leq y$.
+
+\paragraph{(b)}
+Take the empty set $\emptyset\subset\mathbb{Z}$.
+It is vacuously true that $\forall y \in \mathbb{Z}, \forall x\in \emptyset,y\leq x$,
+so all $y\in\mathbb{Z}$ are upper bounds for any chain from $\emptyset$,
+and since $\mathbb{Z}$ has no least element, there is no least upper bound.
+
+\paragraph{(c)}
+\begin{prop}
+  For any chain $S_1\subseteq S_2 \subseteq ... \subseteq S_n \subseteq ...$,
+  the set $S = \bigcup_i S_i$ is the least upper bound.
+\end{prop}
+\begin{proof}
+  Clearly, $\forall i, S_i \subseteq S$. So $S$ is an upper bound.
+
+  Suppose we have another upper bound $S_y$. 
+  As it is an upper bound, $\forall i, S_i \subseteq S_y$.
+  Then $\bigcup_i S_i \subseteq S_y$.
+  By definition, $S = \bigcup_i S_i \subseteq S_y$. So $S$ is the least upper bound.
+\end{proof}
+
+The bottom element is $\perp = \emptyset$ since $\forall S_i\in P(\mathbb{N}), \emptyset \subseteq S_i$.
+
+\begin{prop}
+  $F(S)=\{1\} \cup \{n+2|n\in S\}$ is continuous.
+\end{prop}
+\begin{proof}
+  Suppose $S_x \subseteq S_{x'}$.
+  Then $F(S_x) = \{1\} \cup \{n+2|n\in S_x\} \subseteq \{1\} \cup \{n+2|n\in S_{x'}\} = F(S_{x'})$.
+  So $F$ is monotone.
+
+  Suppose we have a chain $S_1\subseteq S_2 \subseteq ...$.
+  We show that $F(\bigcup_i S_i) = \bigcup_i F(S_i)$.
+  \begin{equation}
+  \begin{aligned}
+    F(\bigcup_i S_i) &= \{1\} \cup \{n+2|n\in \bigcup_i S_i\}\\
+    &= \{1\} \cup \bigcup_i \{n+2|n\in  S_i\}\\
+    &= \bigcup_i \{1\} \cup  \{n+2|n\in  S_i\}\\
+    &= \bigcup_i F(S_i)
+  \end{aligned}
+  \end{equation}
+  So $F$ preserves least upper bounds of chains.
+
+  Then $F$ is continuous.
+
+\end{proof}
+
+By Tarski's fixed point theorem, the least fixed point of $F$ is
+\[\bigcup_n F^n(\emptyset)=\{k|2k-1\in\mathbb{N}\}\]
+In other words, it is set of odd natural numbers.
+
+\end{document}

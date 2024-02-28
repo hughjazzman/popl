@@ -11,9 +11,12 @@ val ex3 = loop(let rec f() = exit in f());;
 val ex4 = loop(let rec f() = exit in loop f());;
 
 ex1;;
+
 -- exit in def for FungolCont.hs
 -- ex2;;
+
 ex3;;
+
 -- fails to evaluate for Fungol.hs
 ex4;;
 

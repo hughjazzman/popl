@@ -2,7 +2,7 @@
 *.fdb*
 *.fls
 *.log
-*.pdf
+*template.pdf
 *.gz
 *.o
 fun*
